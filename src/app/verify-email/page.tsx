@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { verifyEmail } from '@/lib/api';
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
@@ -19,32 +20,18 @@ function VerifyEmailContent() {
       return;
     }
 
-    const verifyEmail = async () => {
+    const performVerifyEmail = async () => {
       try {
-        const response = await fetch('http://localhost:5400/auth/verify-email', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ token }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          setStatus('success');
-          setMessage(data.message || 'Email successfully verified!');
-        } else {
-          setStatus('error');
-          setMessage(data.message || 'Verification failed. The link might be expired or invalid.');
-        }
-      } catch (err) {
+        await verifyEmail(token);
+        setStatus('success');
+        setMessage('Email successfully verified!');
+      } catch (err: any) {
         setStatus('error');
-        setMessage('An error occurred during verification. Please try again later.');
+        setMessage(err.response?.data?.message || err.message || 'An error occurred during verification. Please try again later.');
       }
     };
 
-    verifyEmail();
+    performVerifyEmail();
   }, [token]);
 
   return (

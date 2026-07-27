@@ -190,6 +190,10 @@ export async function resetPassword(
   }
 }
 
+export async function verifyEmail(token: string): Promise<void> {
+  await api.post("/auth/verify-email", { token });
+}
+
 // -----------------------------------------------------
 // GOALS
 // -----------------------------------------------------

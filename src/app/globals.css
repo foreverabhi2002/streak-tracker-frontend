@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #fafafa;
+    --foreground: #111111;
+    --primary: #2d2d2d;
+    --primary-foreground: #fafafa;
+    --border: #e0e0e0;
+    --muted: #f4f4f5;
+    --muted-foreground: #71717a;
+    --accent: #2563eb;
+    
+    /* GitHub Heatmap Light Theme */
+    --heatmap-empty: #ebedf0;
+    --heatmap-1: #9be9a8;
+    --heatmap-2: #40c463;
+    --heatmap-3: #30a14e;
+    --heatmap-4: #216e39;
+  }
+
+  .dark {
+    --background: #0d1117; /* GitHub dark bg */
+    --foreground: #fafafa;
+    --primary: #fafafa;
+    --primary-foreground: #111111;
+    --border: #30363d;
+    --muted: #161b22;
+    --muted-foreground: #8b949e;
+    --accent: #3b82f6;
+
+    /* GitHub Heatmap Dark Theme */
+    --heatmap-empty: #161b22;
+    --heatmap-1: #0e4429;
+    --heatmap-2: #006d32;
+    --heatmap-3: #26a641;
+    --heatmap-4: #39d353;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

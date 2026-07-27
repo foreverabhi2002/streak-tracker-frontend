@@ -123,19 +123,22 @@ export async function updateProfile(data: {
   return updatedUser;
 }
 
-export async function changePassword(oldPassword: string, newPassword: string): Promise<void> {
+export async function changePassword(
+  oldPassword: string,
+  newPassword: string,
+): Promise<void> {
   const user = getSession();
   if (!user) throw new Error("Unauthorized");
-  
+
   const res = await api.post("/auth/change-password", {
     oldPassword,
     newPassword,
     user: {
       ...user,
-      _id: user.id
-    }
+      _id: user.id,
+    },
   });
-  
+
   if (res.data.data) {
     const updatedUser = mapId(res.data.data);
     updatedUser.accessToken = res.data.data.accessToken || user.accessToken;
@@ -275,10 +278,10 @@ export async function addLog(
   // Check if log exists for today
   const logs = await getLogsForGoal(goalId);
   const todayDate = new Date();
-  const today = `${todayDate.getFullYear()}-${String(todayDate.getMonth() + 1).padStart(2, '0')}-${String(todayDate.getDate()).padStart(2, '0')}`;
+  const today = `${todayDate.getFullYear()}-${String(todayDate.getMonth() + 1).padStart(2, "0")}-${String(todayDate.getDate()).padStart(2, "0")}`;
   const existingLog = logs.find((l: LogEntry) => {
     const d = new Date(l.createdAt);
-    const logDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const logDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     return logDate === today;
   });
 

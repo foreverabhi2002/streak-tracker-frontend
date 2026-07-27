@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "sonner";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001",
+  baseURL: "https://streak-tracker-254084383885.asia-south1.run.app",
   headers: {
     "Content-Type": "application/json",
   },

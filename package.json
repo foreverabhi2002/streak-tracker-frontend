@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "pages:build": "npx @cloudflare/next-on-pages@1"
+    "pages:build": "opennextjs-cloudflare build"
   },
   "dependencies": {
     "axios": "^1.18.1",

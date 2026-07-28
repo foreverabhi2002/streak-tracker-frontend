@@ -1,10 +1,11 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useState, Suspense } from 'react';
-import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
-import Link from 'next/link';
+import { PageLoader } from '@/components/PageLoader';
 import { verifyEmail } from '@/lib/api';
+import { CheckCircle, XCircle } from 'lucide-react';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
@@ -37,11 +38,7 @@ function VerifyEmailContent() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] text-center px-4">
       {status === 'loading' && (
-        <div className="animate-fade-in">
-          <Loader2 className="w-16 h-16 text-blue-500 animate-spin mx-auto mb-6" />
-          <h1 className="text-3xl font-bold mb-3 tracking-tight">Verifying your email</h1>
-          <p className="text-gray-500 dark:text-gray-400 text-lg">{message}</p>
-        </div>
+        <PageLoader />
       )}
 
       {status === 'success' && (
@@ -82,10 +79,7 @@ function VerifyEmailContent() {
 export default function VerifyEmailPage() {
   return (
     <Suspense fallback={
-      <div className="flex flex-col items-center justify-center min-h-[80vh]">
-        <Loader2 className="w-16 h-16 text-blue-500 animate-spin mb-6" />
-        <p className="text-gray-500 text-lg animate-pulse">Loading verification module...</p>
-      </div>
+      <PageLoader />
     }>
       <VerifyEmailContent />
     </Suspense>

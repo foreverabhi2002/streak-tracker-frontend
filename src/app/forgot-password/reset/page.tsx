@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { PageLoader } from "@/components/PageLoader";
 import { resetPassword } from "@/lib/api";
 import { Eye, EyeOff } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 
 function ResetPasswordForm() {
   const [newPassword, setNewPassword] = useState("");
@@ -99,7 +100,7 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<div className="text-center mt-20">Loading...</div>}>
+    <Suspense fallback={<PageLoader />}>
       <ResetPasswordForm />
     </Suspense>
   );

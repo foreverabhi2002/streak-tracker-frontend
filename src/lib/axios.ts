@@ -3,6 +3,7 @@ import { toast } from "sonner";
 
 const api = axios.create({
   baseURL: "https://streak-tracker-254084383885.asia-south1.run.app",
+  // baseURL: "http://localhost:5400",
   headers: {
     "Content-Type": "application/json",
   },

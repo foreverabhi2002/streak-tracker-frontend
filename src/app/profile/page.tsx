@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { getSession, updateProfile, getUserGoals, logout, changePassword, User, Goal } from "@/lib/api";
+import { PageLoader } from "@/components/PageLoader";
+import { SocialLinks } from "@/components/SocialLinks";
+import { changePassword, getSession, getUserGoals, Goal, logout, updateProfile, User } from "@/lib/api";
+import { Check, Edit2, Eye, EyeOff, LogOut, X } from "lucide-react";
 import Link from "next/link";
-import { Edit2, Check, X, LogOut, Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -13,6 +15,7 @@ export default function ProfilePage() {
   
   // Edit state
   const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState("");
   const [editPrefix, setEditPrefix] = useState("");
   const [usernameSuffix, setUsernameSuffix] = useState("");
   const [headline, setHeadline] = useState("");
@@ -45,6 +48,7 @@ export default function ProfilePage() {
       setUsernameSuffix(`-${Math.random().toString(36).slice(2, 8)}`); // 6 letters alphanumerics
     }
 
+    setName(session.name || "");
     setHeadline(session.headline || "");
     setBio(session.bio || "");
     setSkills(session.skills || "");
@@ -98,6 +102,7 @@ export default function ProfilePage() {
     setIsUpdating(true);
     try {
       const updatedUser = await updateProfile({
+        name,
         usernamePrefix: editPrefix,
         headline,
         bio,
@@ -169,6 +174,7 @@ export default function ProfilePage() {
       } else {
         setEditPrefix(user.username);
       }
+      setName(user.name || "");
       setHeadline(user.headline || "");
       setBio(user.bio || "");
       setSkills(user.skills || "");
@@ -178,7 +184,7 @@ export default function ProfilePage() {
   };
 
   if (loading) {
-    return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
+    return <PageLoader />;
   }
 
   return (
@@ -201,10 +207,20 @@ export default function ProfilePage() {
         <div className="flex justify-between items-center">
           <h3 className="text-xl font-bold text-foreground">Profile Details</h3>
           {!isEditing && (
-            <button onClick={() => setIsEditing(true)} className="flex items-center gap-2 text-sm bg-primary text-primary-foreground font-medium hover:opacity-90 px-4 py-2 rounded-md transition-colors">
-              <Edit2 className="w-4 h-4" />
-              Edit Profile
-            </button>
+            <div className="flex gap-2">
+              <Link 
+                href={`/${user?.username}`} 
+                target="_blank"
+                className="flex items-center gap-2 text-sm bg-muted text-foreground font-medium hover:bg-border px-4 py-2 rounded-md transition-colors"
+              >
+                <Eye className="w-4 h-4" />
+                View Public
+              </Link>
+              <button onClick={() => setIsEditing(true)} className="flex items-center gap-2 text-sm bg-primary text-primary-foreground font-medium hover:opacity-90 px-4 py-2 rounded-md transition-colors">
+                <Edit2 className="w-4 h-4" />
+                Edit Profile
+              </button>
+            </div>
           )}
         </div>
         
@@ -228,6 +244,19 @@ export default function ProfilePage() {
                   disabled={isUpdating}
                 />
               </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold">Name</label>
+              <input 
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="p-2 border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-accent"
+                disabled={isUpdating}
+                placeholder="e.g. John Doe"
+                required
+              />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -355,8 +384,9 @@ export default function ProfilePage() {
                 </div>
               )}
               <div className="flex flex-col">
-                <span className="text-2xl font-bold text-foreground">@{user?.username}</span>
-                {user?.headline && <span className="text-sm text-muted-foreground">{user.headline}</span>}
+                <span className="text-2xl font-bold text-foreground">{user?.name}</span>
+                <span className="text-sm font-medium text-muted-foreground">@{user?.username}</span>
+                {user?.headline && <span className="text-sm text-muted-foreground mt-1">{user.headline}</span>}
               </div>
             </div>
             {user?.bio && (
@@ -380,13 +410,7 @@ export default function ProfilePage() {
             {user?.socials && user.socials.length > 0 && (
               <div>
                 <h4 className="text-xs uppercase text-muted-foreground tracking-wider mb-2">Social Links</h4>
-                <div className="flex flex-wrap gap-2">
-                  {user.socials.map((link, idx) => (
-                    <a key={idx} href={link.url} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 bg-muted text-sm font-medium text-foreground hover:bg-border rounded-md border border-border transition-colors">
-                      {link.platform}
-                    </a>
-                  ))}
-                </div>
+                <SocialLinks socials={user.socials} />
               </div>
             )}
           </div>

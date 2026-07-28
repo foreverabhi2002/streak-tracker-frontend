@@ -7,6 +7,7 @@ export interface SocialLink {
 
 export interface User {
   id: string;
+  name: string;
   email: string;
   username: string; // The generated username e.g. 'john-a8x9f2'
   bio?: string;
@@ -41,8 +42,8 @@ export interface LogEntry {
 
 const mapId = <T extends Record<string, any>>(obj: T): any => {
   if (!obj) return obj;
-  const { _id, ...rest } = obj;
-  return { ...rest, id: _id };
+  const { _id, socialLinks, ...rest } = obj;
+  return { ...rest, id: _id, socials: socialLinks || rest.socials };
 };
 
 // -----------------------------------------------------
@@ -59,11 +60,17 @@ export async function register(
   email: string,
   password: string,
   baseUsername: string,
+  name: string,
 ): Promise<User> {
   const randomSuffix = Math.random().toString(36).substring(2, 8);
   const username = `${baseUsername.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${randomSuffix}`;
 
-  const res = await api.post("/auth/register", { email, password, username });
+  const res = await api.post("/auth/register", {
+    email,
+    password,
+    username,
+    name,
+  });
   return mapId(res.data.data);
 }
 
@@ -83,6 +90,7 @@ export async function logout() {
 }
 
 export async function updateProfile(data: {
+  name?: string;
   usernamePrefix?: string;
   bio?: string;
   headline?: string;
@@ -109,7 +117,9 @@ export async function updateProfile(data: {
   const updateData = {
     ...data,
     username: newUsername,
+    socialLinks: data.socials,
   };
+  delete updateData.socials;
 
   const res = await api.patch(`/users/${user.id}`, updateData);
   const updatedUser = mapId(res.data.data);
@@ -217,6 +227,33 @@ export async function createGoal(title: string): Promise<Goal> {
 export async function getUserGoals(): Promise<Goal[]> {
   const res = await api.get("/goals");
   return res.data.data.map(mapId);
+}
+
+export async function getPublicProfile(username: string): Promise<User | null> {
+  try {
+    const res = await api.get(`/users/public/${username}`);
+    return mapId(res.data.data);
+  } catch {
+    return null;
+  }
+}
+
+export async function getPublicGoals(username: string): Promise<Goal[]> {
+  try {
+    const res = await api.get(`/goals/public/${username}`);
+    return res.data.data.map(mapId);
+  } catch {
+    return [];
+  }
+}
+
+export async function getPublicLogs(username: string): Promise<LogEntry[]> {
+  try {
+    const res = await api.get(`/log-entries/public/${username}`);
+    return res.data.data.map(mapId);
+  } catch {
+    return [];
+  }
 }
 
 export async function getGoalBySlug(

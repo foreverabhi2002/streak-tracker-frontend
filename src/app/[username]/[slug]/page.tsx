@@ -1,9 +1,12 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
-import { getGoalBySlug, getLogsForGoal, Goal, LogEntry } from '@/lib/api';
 import { Heatmap } from '@/components/Heatmap';
 import { LogList } from '@/components/LogList';
+import { PageLoader } from '@/components/PageLoader';
+import { SocialLinks } from '@/components/SocialLinks';
+import { getGoalBySlug, getLogsForGoal, Goal, LogEntry } from '@/lib/api';
+import Link from 'next/link';
+import { use, useEffect, useState } from 'react';
 
 export default function PublicGoalPage({ params }: { params: Promise<{ username: string, slug: string }> }) {
   const resolvedParams = use(params);
@@ -27,7 +30,7 @@ export default function PublicGoalPage({ params }: { params: Promise<{ username:
   }, [slug]);
 
   if (loading) {
-    return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
+    return <PageLoader />;
   }
 
   if (!goal) {
@@ -49,19 +52,18 @@ export default function PublicGoalPage({ params }: { params: Promise<{ username:
               <img src={goal.avatarUrl} alt={goal.username} className="w-8 h-8 rounded-full object-cover border border-border" />
             )}
             {goal.username && (
-              <span className="text-sm font-semibold text-primary bg-primary/10 px-2 py-1 rounded-md">
+              <Link 
+                href={`/${goal.username}`}
+                className="text-sm font-semibold text-primary bg-primary/10 px-2 py-1 rounded-md hover:bg-primary/20 transition-colors"
+              >
                 @{goal.username}
-              </span>
+              </Link>
             )}
             <p className="text-base text-muted-foreground">Public Learning Log</p>
           </div>
           {goal.socials && goal.socials.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
-              {goal.socials.map((link, idx) => (
-                <a key={idx} href={link.url} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-muted-foreground hover:text-primary hover:underline transition-colors">
-                  {link.platform}
-                </a>
-              ))}
+            <div className="mt-2">
+              <SocialLinks socials={goal.socials} />
             </div>
           )}
         </div>

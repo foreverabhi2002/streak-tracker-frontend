@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function RegisterPage() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
@@ -17,7 +18,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await register(email, password, username);
+      await register(email, password, username, name);
       router.push("/");
     } catch (err: any) {
       setError(err.response?.data?.message || err.message);
@@ -32,6 +33,17 @@ export default function RegisterPage() {
       </p> */}
       {error && <div className="text-red-500 mb-4 text-sm text-center">{error}</div>}
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div>
+          <label className="block text-sm font-medium mb-1">Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full p-2 border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-accent"
+            placeholder="e.g. John Doe"
+            required
+          />
+        </div>
         <div>
           <label className="block text-sm font-medium mb-1">Username</label>
           <input

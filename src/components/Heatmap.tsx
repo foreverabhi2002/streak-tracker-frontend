@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface HeatmapProps {
   activityDates: string[]; // ISO date strings e.g. "2026-07-26"
@@ -91,9 +91,13 @@ export function Heatmap({ activityDates }: HeatmapProps) {
                   return (
                     <div 
                       key={dayIdx} 
-                      className={`w-[12px] h-[12px] rounded-sm transition-transform hover:scale-125 hover:ring-1 hover:ring-border hover:z-10 relative ${colorClass}`}
-                      title={`${count} log(s) on ${key}`}
-                    />
+                      tabIndex={0}
+                      className={`group w-[12px] h-[12px] rounded-sm transition-transform hover:scale-125 focus:scale-125 hover:ring-1 focus:ring-1 hover:ring-border focus:ring-border hover:z-20 focus:z-20 relative cursor-pointer focus:outline-none ${colorClass}`}
+                    >
+                      <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block group-focus:block w-max bg-foreground text-background text-xs px-2 py-1 rounded shadow-lg z-50">
+                        {count} log(s) on {key}
+                      </span>
+                    </div>
                   );
                 })}
               </div>

@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
-import { getGoalBySlug, addLog, getLogsForGoal, updateGoal, deleteGoal, Goal, LogEntry, getSession } from '@/lib/api';
 import { Heatmap } from '@/components/Heatmap';
 import { LogList } from '@/components/LogList';
+import { PageLoader } from '@/components/PageLoader';
+import { addLog, deleteGoal, getGoalBySlug, getLogsForGoal, getSession, Goal, LogEntry, updateGoal } from '@/lib/api';
+import { Check, Copy, Edit2, Share2, Trash2, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Edit2, Trash2, Check, X } from 'lucide-react';
+import { use, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 export default function TrackPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = use(params);
@@ -120,7 +122,7 @@ export default function TrackPage({ params }: { params: Promise<{ slug: string }
   };
 
   if (loading) {
-    return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
+    return <PageLoader />;
   }
 
   if (!goal) {
@@ -180,16 +182,49 @@ export default function TrackPage({ params }: { params: Promise<{ slug: string }
 
       <div className="bg-muted p-6 rounded-xl border border-dashed border-border">
         <p className="text-sm font-medium text-foreground mb-3">Your public link to share:</p>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <input 
             type="text" 
             readOnly 
             value={publicLink} 
-            className="flex-1 p-2 bg-background border border-border rounded-md text-sm text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+            className="flex-1 min-w-0 w-full p-2 bg-background border border-border rounded-md text-sm text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
           />
-          <Link href={`/${goal.username}/${slug}`} className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:opacity-90 transition-opacity whitespace-nowrap" target="_blank">
-            View Public
-          </Link>
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(publicLink);
+                toast.success('URL Copied');
+              }}
+              className="p-2 border border-border bg-background hover:bg-muted text-foreground rounded-md transition-colors"
+              aria-label="Copy public link"
+              title="Copy URL"
+            >
+              <Copy className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => {
+                const message = `Check out my progress on "${goal.title}"! I'm on a 🔥 ${goal.currentStreak} day streak!`;
+                if (navigator.share) {
+                  navigator.share({
+                    title: goal.title,
+                    text: message,
+                    url: publicLink,
+                  }).catch(console.error);
+                } else {
+                  navigator.clipboard.writeText(`${message} ${publicLink}`);
+                  toast.success('Share text & URL copied');
+                }
+              }}
+              className="p-2 border border-border bg-background hover:bg-muted text-foreground rounded-md transition-colors"
+              aria-label="Share public link"
+              title="Share Goal"
+            >
+              <Share2 className="w-5 h-5" />
+            </button>
+            <Link href={`/${goal.username}/${slug}`} className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:opacity-90 transition-opacity whitespace-nowrap text-center sm:text-left flex-1 sm:flex-none" target="_blank">
+              View Public
+            </Link>
+          </div>
         </div>
       </div>
 

@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
+import { HeaderNav } from "@/components/HeaderNav";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { HeaderNav } from "@/components/HeaderNav";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Toaster } from "sonner";
 import "./globals.css";
@@ -9,6 +9,16 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Learn In Public Streak Tracker",
   description: "Track your learning journey and share your progress.",
+  icons: {
+    icon: [
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' }
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }
+    ]
+  },
+  manifest: '/site.webmanifest',
 };
 
 export default function RootLayout({
